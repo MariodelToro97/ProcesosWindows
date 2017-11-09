@@ -1,3 +1,4 @@
+
 package procesos.windows;
 
 import java.util.Random;
@@ -17,7 +18,8 @@ public class ProcesosWindows {
         opcion = JOptionPane.showOptionDialog(null, "SELECCIONE OPCIÓN", "MENU PRINCIPAL", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"INICIAR PROCESO", "SALIR"}, null);
 
         if (opcion == 0) {
-
+            
+            //Tamaño de memoria de la RAM
             do {
                 salir = false;
                 try {
@@ -34,7 +36,8 @@ public class ProcesosWindows {
                     salir = true;
                 }
             } while (salir);
-
+            
+            //Porcentaje de utilización de la RAM
             do {
                 salir = false;
                 try {
@@ -53,9 +56,11 @@ public class ProcesosWindows {
             } while (salir);
 
             String RAM[] = new String[tamaño];
-
+            
+            //Método para llenar espacios de forma aleatoria de la RAM
             RAM = OcupadosRAM(RAM, ocupado, tamaño);
 
+            //Ingreso por parte del usuario el número de procesos que va a ingresar a la RAM
             do {
                 salir = false;
                 try {
@@ -76,6 +81,7 @@ public class ProcesosWindows {
             
             String nombre;
             
+            //Número de Segemetos que va a contener cada uno de los Procesos
             do {
                 salir = false;                
                 try{
@@ -100,6 +106,7 @@ public class ProcesosWindows {
         }
     }
 
+    //Método para llenar espacios de RAM con espacios Ocupados
     public static String[] OcupadosRAM(String[] RAM, float ocupado, int tamaño) {
         int a = 0, i = 0, correcto, random;
         boolean encontrado = false;
@@ -140,7 +147,8 @@ public class ProcesosWindows {
 
         return RAM;
     }
-
+    
+    //Método para desplegar toda la RAM con sus respectivas asignaciones
     public static void desplegadoRAM(String[] RAM, int tamaño) {
         int i = 0;
 
