@@ -118,16 +118,16 @@ public class ProcesosWindows {
             String[] tipo = new String[h];
             Byte cuantos[] = new Byte[h];
 
-            altaSegmentos(proc, h, tipo, cuantos);
+            altaSegmentos(proc, h, tipo, cuantos, RAM);
 
-            //TMS = llenadoTMS(TMS, h);
-            //desplegadoRAM(RAM, tamaño);
-            //desplegadoTMS(TMS, h, proc);
+            TMS = llenadoTMS(TMS, h);
+            desplegadoRAM(RAM, tamaño);
+            desplegadoTMS(TMS, h, proc);
         }
     }
 
     //Método para dar de alta los datos de cada segmento
-    public static void altaSegmentos(byte[] proc, int h, String[] tipo, Byte[] cuantos) {
+    public static void altaSegmentos(byte[] proc, int h, String[] tipo, Byte[] cuantos, String[] RAM) {
         int k, o = 0;
         boolean bueno;
         String cadenota = "";
@@ -184,6 +184,40 @@ public class ProcesosWindows {
         }
 
         JOptionPane.showMessageDialog(null, cadenota, "INFORMACIÓN", JOptionPane.INFORMATION_MESSAGE);
+        llenadoRAM(tipo, proc, cuantos, RAM);
+    }
+
+    //Método para llenar la RAM con los procesos seleccionados por los usuarios
+    public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[]) {
+        int t = 0, p = 0, contador = 0, q = 0;
+
+        for (int i = 0; i < proc.length; i++) {
+            do {
+                switch (tipo[t]) {
+                    case "PÁGINA":
+
+                        break;
+
+                    case "VARIABLE":
+                        q = 0;
+                        do {
+                            for (int j = contador; j < RAM.length; j++) {
+                                if (RAM[j].equalsIgnoreCase("---------")) {
+                                    RAM[j] = "V" + (q + 1) + " S" + (t + 1) + " P" + (p + 1) + " ";
+                                }
+                                contador = j;
+                            }
+                            q++;
+                        } while (q < (cuantos[t] - 1));
+
+                        break;
+                }
+
+                t++;
+                p++;
+            } while (p < proc[i]);
+
+        }
     }
 
     //Método para llenar la Tabla de Mapa de Segmentos
@@ -229,6 +263,10 @@ public class ProcesosWindows {
 
         correcto = (int) (tamaño * (ocupado / 100));
 
+        for (int j = 0; j < RAM.length; j++) {
+            RAM[j] = "---------";
+        }
+
         if (correcto != 0) {
             int llenado[] = new int[correcto];
 
@@ -255,7 +293,7 @@ public class ProcesosWindows {
                 llenado[a] = random;
                 a++;
 
-                RAM[random] = "OCUPADO";
+                RAM[random] = "-OCUPADO-";
                 i++;
 
             } while (i < correcto);
@@ -270,9 +308,9 @@ public class ProcesosWindows {
 
         do {
             if (i % 2 == 0) {
-                System.out.println(i + "     " + RAM[i]);
+                System.out.println(RAM[i] + "     " + i);
             } else {
-                System.out.println("      " + RAM[i]);
+                System.out.println(RAM[i]);
             }
             i++;
         } while (i < tamaño);
