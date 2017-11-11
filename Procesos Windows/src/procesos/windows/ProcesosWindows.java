@@ -168,12 +168,12 @@ public class ProcesosWindows {
                     }
                 } while (bueno);
 
-                cuantos[i] = numero;
+                cuantos[o] = numero;
 
                 if (tipo[o].equalsIgnoreCase("PÁGINA")) {
-                    cadenota += "\n --> El Segmento " + (k + 1) + " tiene " + cuantos[i] + " páginas";
+                    cadenota += "\n --> El Segmento " + (k + 1) + " tiene " + cuantos[o] + " páginas de 2 Kb c/u";
                 } else {
-                    cadenota += "\n --> El Segmento " + (k + 1) + " contiene " + cuantos[i] + " variables de 1 Kb c/u";
+                    cadenota += "\n --> El Segmento " + (k + 1) + " contiene " + cuantos[o] + " variables de 1 Kb c/u";
                 }
 
                 k++;
@@ -182,41 +182,68 @@ public class ProcesosWindows {
             } while (k < proc[i]);
             cadenota += "\n";
         }
-
-        JOptionPane.showMessageDialog(null, cadenota, "INFORMACIÓN", JOptionPane.INFORMATION_MESSAGE);
+        
         llenadoRAM(tipo, proc, cuantos, RAM);
+        JOptionPane.showMessageDialog(null, cadenota, "INFORMACIÓN", JOptionPane.INFORMATION_MESSAGE);
     }
 
     //Método para llenar la RAM con los procesos seleccionados por los usuarios
     public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[]) {
-        int t = 0, p = 0, contador = 0, q = 0;
+        int s = 0, p = 0, contador = 0, q, o, pagina;
+        byte r;
 
         for (int i = 0; i < proc.length; i++) {
-            do {
-                switch (tipo[t]) {
-                    case "PÁGINA":
+            o = 0;
 
-                        break;
+            if (contador >= RAM.length) {
+                JOptionPane.showMessageDialog(null, "Ha ocurrido un OverFlow dentro de la memoria RAM", "Error OVERFLOW", JOptionPane.ERROR_MESSAGE);
+                
+            } else {
+                do {
+                    switch (tipo[s]) {
+                        case "PÁGINA":
+                            q = 0;
+                            r = 0;
+                            pagina = cuantos[s] * 2;
 
-                    case "VARIABLE":
-                        q = 0;
-                        do {
-                            for (int j = contador; j < RAM.length; j++) {
-                                if (RAM[j].equalsIgnoreCase("---------")) {
-                                    RAM[j] = "V" + (q + 1) + " S" + (t + 1) + " P" + (p + 1) + " ";
+                            do {
+                                for (int j = contador; j < RAM.length; j++) {
+                                    if (RAM[j].equalsIgnoreCase("---------")) {
+                                        RAM[j] = "P" + (r + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
+                                        contador = j;
+                                        break;
+                                    }
                                 }
-                                contador = j;
-                            }
-                            q++;
-                        } while (q < (cuantos[t] - 1));
 
-                        break;
-                }
+                                if (q % 2 != 0) {
+                                    r++;
+                                }
 
-                t++;
-                p++;
-            } while (p < proc[i]);
+                                q++;
+                            } while (q < pagina);
 
+                            break;
+
+                        case "VARIABLE":
+                            q = 0;
+
+                            do {
+                                for (int j = contador; j < RAM.length; j++) {
+                                    if (RAM[j].equalsIgnoreCase("---------")) {
+                                        RAM[j] = "V" + (q + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
+                                        contador = j;
+                                        break;
+                                    }
+                                }
+                                q++;
+                            } while (q < cuantos[s]);
+                            break;
+                    }
+                    o++;
+                    s++;
+                    p++;
+                } while (p < proc[i]);
+            }
         }
     }
 
@@ -260,8 +287,14 @@ public class ProcesosWindows {
     public static String[] OcupadosRAM(String[] RAM, float ocupado, int tamaño) {
         int a = 0, i = 0, correcto, random;
         boolean encontrado = false;
+        float decimal;
 
         correcto = (int) (tamaño * (ocupado / 100));
+        decimal = (tamaño * (ocupado / 100));
+        
+        if ( Math.abs(decimal - correcto) >= 0.5) {
+            correcto++;
+        }
 
         for (int j = 0; j < RAM.length; j++) {
             RAM[j] = "---------";
