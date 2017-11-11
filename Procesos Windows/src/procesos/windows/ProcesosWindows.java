@@ -118,16 +118,15 @@ public class ProcesosWindows {
             String[] tipo = new String[h];
             Byte cuantos[] = new Byte[h];
 
-            altaSegmentos(proc, h, tipo, cuantos, RAM);
+            altaSegmentos(proc, h, tipo, cuantos, RAM, TMS, h);
 
-            TMS = llenadoTMS(TMS, h);
             desplegadoRAM(RAM, tamaño);
             desplegadoTMS(TMS, h, proc);
         }
     }
 
     //Método para dar de alta los datos de cada segmento
-    public static void altaSegmentos(byte[] proc, int h, String[] tipo, Byte[] cuantos, String[] RAM) {
+    public static void altaSegmentos(byte[] proc, int h, String[] tipo, Byte[] cuantos, String[] RAM, int[][] TMS, int ñ) {
         int k, o = 0;
         boolean bueno;
         String cadenota = "";
@@ -182,78 +181,126 @@ public class ProcesosWindows {
             } while (k < proc[i]);
             cadenota += "\n";
         }
-        
-        llenadoRAM(tipo, proc, cuantos, RAM);
         JOptionPane.showMessageDialog(null, cadenota, "INFORMACIÓN", JOptionPane.INFORMATION_MESSAGE);
+        llenadoRAM(tipo, proc, cuantos, RAM, TMS, ñ);
     }
 
     //Método para llenar la RAM con los procesos seleccionados por los usuarios
-    public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[]) {
-        int s = 0, p = 0, contador = 0, q, o, pagina;
+    public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[], int TMS[][], int h) {
+        int s = 0, p, contador = 0, q, o, pagina;
         byte r;
 
         for (int i = 0; i < proc.length; i++) {
             o = 0;
+            p = 0;
 
-            if (contador >= RAM.length) {
-                JOptionPane.showMessageDialog(null, "Ha ocurrido un OverFlow dentro de la memoria RAM", "Error OVERFLOW", JOptionPane.ERROR_MESSAGE);
-                
-            } else {
-                do {
-                    switch (tipo[s]) {
-                        case "PÁGINA":
-                            q = 0;
-                            r = 0;
-                            pagina = cuantos[s] * 2;
+            do {
+                switch (tipo[s]) {
+                    case "PÁGINA":
+                        q = 0;
+                        r = 0;
+                        pagina = cuantos[s] * 2;
 
-                            do {
-                                for (int j = contador; j < RAM.length; j++) {
-                                    if (RAM[j].equalsIgnoreCase("---------")) {
-                                        RAM[j] = "P" + (r + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
-                                        contador = j;
-                                        break;
-                                    }
+                        do {
+                            for (int j = contador; j < RAM.length; j++) {
+                                if (RAM[j].equalsIgnoreCase("---------")) {
+                                    RAM[j] = "P" + (r + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
+                                    contador = j;
+                                    break;
                                 }
+                            }
 
-                                if (q % 2 != 0) {
-                                    r++;
+                            if (q % 2 != 0) {
+                                r++;
+                            }
+
+                            q++;
+                        } while (q < pagina);
+
+                        break;
+
+                    case "VARIABLE":
+                        q = 0;
+
+                        do {
+                            for (int j = contador; j < RAM.length; j++) {
+                                if (RAM[j].equalsIgnoreCase("---------")) {
+                                    RAM[j] = "V" + (q + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
+                                    contador = j;
+                                    break;
                                 }
+                            }
+                            q++;
+                        } while (q < cuantos[s]);
+                        break;
+                }
+                o++;
+                s++;
+                p++;
+            } while (p < proc[i]);
 
-                                q++;
-                            } while (q < pagina);
+            //Meter Las Tablas a la RAM
+            insercionTablas(proc[i], i, RAM, cuantos);
+            String[][] TMP = creacionllenadoTMP(cuantos, RAM, tipo, proc);
+            llenadoTMS(TMS, h, tipo, cuantos);
 
-                            break;
-
-                        case "VARIABLE":
-                            q = 0;
-
-                            do {
-                                for (int j = contador; j < RAM.length; j++) {
-                                    if (RAM[j].equalsIgnoreCase("---------")) {
-                                        RAM[j] = "V" + (q + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
-                                        contador = j;
-                                        break;
-                                    }
-                                }
-                                q++;
-                            } while (q < cuantos[s]);
-                            break;
-                    }
-                    o++;
-                    s++;
-                    p++;
-                } while (p < proc[i]);
-            }
         }
     }
 
+    //Método para  incersión de las tablas a la RAM
+    public static void insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos) {
+        int contador = 0, k = 0;
+
+        do {
+            for (int j = contador; j < RAM.length; j++) {
+                if (RAM[j].equalsIgnoreCase("---------")) {
+                    RAM[j] = "E" + (k + 1) + " TMS P" + (p + 1);
+                    contador = j;
+                    break;
+                }
+            }
+            k++;
+        } while (k < proc);
+    }
+
+    //Método para creación y llenado de las tablas TMP
+    public static String[][] creacionllenadoTMP(Byte[] cuantos, String[] RAM, String[] tipo, byte[] proc) {
+        int sum = 0, d = 0, t = 0, contador = 0;
+
+        for (int i = 0; i < cuantos.length; i++) {
+            sum += cuantos[i];
+        }
+
+        String[][] TMP = new String[sum][4];
+
+        for (int i = 0; i < sum; i = contador) {
+            
+            
+            TMP[i][0] = "1";
+            TMP[i][1] = "0";
+
+            for (int j = 0; j < cuantos[t]; j++) {
+                
+            }
+
+        }
+
+        return TMP;
+    }
+
     //Método para llenar la Tabla de Mapa de Segmentos
-    public static int[][] llenadoTMS(int[][] TMS, int h) {
+    public static int[][] llenadoTMS(int[][] TMS, int h, String[] tipo, Byte[] cuantos) {
 
         for (int i = 0; i < h; i++) {
-            for (int j = 0; j < 4; j++) {
-                TMS[i][j] = (i + j);
+            TMS[i][0] = 1;
+            TMS[i][1] = 0;
+
+            if (tipo[i].equalsIgnoreCase("VARIABLE")) {
+                TMS[i][2] = cuantos[i] / 2;
+            } else {
+                TMS[i][2] = cuantos[i];
             }
+
         }
 
         return TMS;
@@ -291,8 +338,8 @@ public class ProcesosWindows {
 
         correcto = (int) (tamaño * (ocupado / 100));
         decimal = (tamaño * (ocupado / 100));
-        
-        if ( Math.abs(decimal - correcto) >= 0.5) {
+
+        if (Math.abs(decimal - correcto) >= 0.5) {
             correcto++;
         }
 
