@@ -170,9 +170,9 @@ public class ProcesosWindows {
                 cuantos[o] = numero;
 
                 if (tipo[o].equalsIgnoreCase("PÁGINA")) {
-                    cadenota += "\n --> El Segmento " + (k + 1) + " tiene " + cuantos[o] + " páginas de 2 Kb c/u";
+                    cadenota += "\n --> El Segmento " + (k + 1) + " tiene " + cuantos[o] + " página(s) de 2 Kb c/u";
                 } else {
-                    cadenota += "\n --> El Segmento " + (k + 1) + " contiene " + cuantos[o] + " variables de 1 Kb c/u";
+                    cadenota += "\n --> El Segmento " + (k + 1) + " contiene " + cuantos[o] + " variable(s) de 1 Kb c/u";
                 }
 
                 k++;
@@ -265,7 +265,7 @@ public class ProcesosWindows {
 
     //Método para creación y llenado de las tablas TMP
     public static String[][] creacionllenadoTMP(Byte[] cuantos, String[] RAM, String[] tipo, byte[] proc) {
-        int sum = 0, d = 0, t = 0, contador = 0;
+        int sum = 0, t, contador = 0, pag;
 
         for (int i = 0; i < cuantos.length; i++) {
             sum += cuantos[i];
@@ -273,22 +273,33 @@ public class ProcesosWindows {
 
         String[][] TMP = new String[sum][4];
 
-        for (int i = 0; i < sum; i = contador) {
-            
-            
-            TMP[i][0] = "1";
-            TMP[i][1] = "0";
-
-            for (int j = 0; j < cuantos[t]; j++) {
-                
+        for (int i = 0; i < sum; i++) {
+            for (int j = 0; j < 4; j++) {
+                TMP[i][j] = "0";
             }
+        }
 
+        //sum = cuantos[0];
+        t = 0;
+        pag = 0;
+        
+        for (int i = 0; i < sum; i = contador) {
+            do {
+                TMP[i][0] = "1";
+                
+                
+                
+                t++;
+            } while (t < cuantos[pag]);
+
+            contador += cuantos[pag];
+            //sum += cuantos[pag];
         }
 
         return TMP;
     }
-
     //Método para llenar la Tabla de Mapa de Segmentos
+
     public static int[][] llenadoTMS(int[][] TMS, int h, String[] tipo, Byte[] cuantos) {
 
         for (int i = 0; i < h; i++) {
