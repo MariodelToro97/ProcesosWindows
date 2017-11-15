@@ -280,20 +280,33 @@ public class ProcesosWindows {
         }
 
         //sum = cuantos[0];
-        t = 0;
         pag = 0;
-        
+
         for (int i = 0; i < sum; i = contador) {
-            do {
-                TMP[i][0] = "1";
-                
-                
-                
-                t++;
-            } while (t < cuantos[pag]);
+            t = 0;
+
+            switch (tipo[pag]) {
+                case "PÁGINA":
+                    do {
+                        TMP[i][0] = "1";
+
+                        t++;
+                        i++;
+                    } while (t < cuantos[pag]);
+                    break;
+
+                case "VARIABLE":
+                    do {
+                        TMP[i][0] = "1";
+
+                        t++;
+                        i++;
+                    } while (t < cuantos[pag]);
+                    break;
+            }
 
             contador += cuantos[pag];
-            //sum += cuantos[pag];
+            pag++;
         }
 
         return TMP;
