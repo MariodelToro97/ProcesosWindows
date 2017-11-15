@@ -139,11 +139,12 @@ public class ProcesosWindows {
             do {
                 tipo[o] = (String) JOptionPane.showInputDialog(null, "¿Qué va a contener el Segmento " + (k + 1) + " del Proceso " + (i + 1), "ALTA DE SEGMENTOS", JOptionPane.QUESTION_MESSAGE, null, new Object[]{"PÁGINA", "VARIABLE"}, "SELECCIONE UNA OPCIÓN");
 
-                do {
-                    bueno = false;
+                if (tipo[o].equalsIgnoreCase("PÁGINA")) {
 
-                    try {
-                        if (tipo[o].equalsIgnoreCase("PÁGINA")) {
+                    do {
+                        bueno = false;
+                        try {
+
                             do {
                                 numero = Byte.parseByte(JOptionPane.showInputDialog(null, "Número de Páginas que contendrá el Segmento " + (k + 1) + " del Proceso " + (i + 1), "Total", JOptionPane.QUESTION_MESSAGE));
 
@@ -151,7 +152,18 @@ public class ProcesosWindows {
                                     JOptionPane.showMessageDialog(null, "Ingresó un número de procesos erróneo", "Procesos", JOptionPane.ERROR_MESSAGE);
                                 }
                             } while (numero <= 0);
-                        } else {
+
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
+                            bueno = true;
+                        }
+                    } while (bueno);
+
+                } else {
+
+                    do {
+                        bueno = false;
+                        try {
                             do {
                                 numero = Byte.parseByte(JOptionPane.showInputDialog(null, "Número de Variables que contendrá el Segmento " + (k + 1) + " del Proceso " + (i + 1), "Total", JOptionPane.QUESTION_MESSAGE));
 
@@ -159,13 +171,13 @@ public class ProcesosWindows {
                                     JOptionPane.showMessageDialog(null, "Ingresó un número de procesos erróneo", "Procesos", JOptionPane.ERROR_MESSAGE);
                                 }
                             } while (numero <= 0);
-                        }
 
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                        bueno = true;
-                    }
-                } while (bueno);
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
+                            bueno = true;
+                        }
+                    } while (bueno);
+                }
 
                 cuantos[o] = numero;
 
@@ -184,8 +196,8 @@ public class ProcesosWindows {
         JOptionPane.showMessageDialog(null, cadenota, "INFORMACIÓN", JOptionPane.INFORMATION_MESSAGE);
         llenadoRAM(tipo, proc, cuantos, RAM, TMS, ñ);
     }
-
     //Método para llenar la RAM con los procesos seleccionados por los usuarios
+
     public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[], int TMS[][], int h) {
         int s = 0, p, contador = 0, q, o, pagina;
         byte r;
@@ -241,9 +253,32 @@ public class ProcesosWindows {
 
             //Meter Las Tablas a la RAM
             insercionTablas(proc[i], i, RAM, cuantos);
-            String[][] TMP = creacionllenadoTMP(cuantos, RAM, tipo, proc);
-            llenadoTMS(TMS, h, tipo, cuantos);
+        }
 
+        //String[][] TMP = creacionTMP(cuantos);
+        //llenadoTMP(cuantos, RAM, tipo, proc, i, TMP);
+        //ImpresionTMP(TMP);
+        llenadoTMS(TMS, h, tipo, cuantos);
+
+    }
+
+    //Método para crear la matriz TMP
+    public static String[][] creacionTMP(Byte cuantos[]) {
+        int sum = 0;
+
+        for (int i = 0; i < cuantos.length; i++) {
+            sum += cuantos[i];
+        }
+
+        String[][] TMP = new String[sum][4];
+
+        return TMP;
+    }
+
+    //Método para Imprimir el TMP
+    public static void ImpresionTMP(String[][] TMP) {
+        for (int i = 0; i < TMP.length; i++) {
+            System.out.println(TMP[i][0] + "  " + TMP[i][1] + "   " + TMP[i][2] + "   " + TMP[i][3]);
         }
     }
 
@@ -264,14 +299,13 @@ public class ProcesosWindows {
     }
 
     //Método para creación y llenado de las tablas TMP
-    public static String[][] creacionllenadoTMP(Byte[] cuantos, String[] RAM, String[] tipo, byte[] proc) {
-        int sum = 0, t, contador = 0, pag;
+    public static String[][] llenadoTMP(Byte[] cuantos, String[] RAM, String[] tipo, byte[] proc, int numero, String[][] TMP) {
+        int sum = 0, t, contador = 0, pag, inicio = 0;
+        Integer direccion;
 
         for (int i = 0; i < cuantos.length; i++) {
             sum += cuantos[i];
         }
-
-        String[][] TMP = new String[sum][4];
 
         for (int i = 0; i < sum; i++) {
             for (int j = 0; j < 4; j++) {
@@ -279,16 +313,33 @@ public class ProcesosWindows {
             }
         }
 
-        //sum = cuantos[0];
+        for (int i = 0; i < (numero + 1); i++) {
+            inicio += cuantos[i];
+        }
+
         pag = 0;
 
-        for (int i = 0; i < sum; i = contador) {
+        for (int i = inicio; i < sum; i = contador) {
             t = 0;
 
             switch (tipo[pag]) {
                 case "PÁGINA":
                     do {
                         TMP[i][0] = "1";
+
+                        //P1 S2 P2 
+                        for (int j = 0; j < RAM.length; j++) {
+                            if (RAM[j].equalsIgnoreCase("P" + (t + 1) + " S" + (pag + 1) + " P" + (numero + 1) + " ")) {
+                                if (j % 2 == 0) {
+                                    direccion = j - 1;
+                                    TMP[i][2] = direccion.toString();
+                                } else {
+                                    direccion = j;
+                                    TMP[i][2] = direccion.toString();
+                                }
+                                break;
+                            }
+                        }
 
                         t++;
                         i++;
