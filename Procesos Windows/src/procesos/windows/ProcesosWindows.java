@@ -31,25 +31,7 @@ public class ProcesosWindows {
                     confirmacion = JOptionPane.showOptionDialog(null, "Usted ya ha ingresado un tamaño de RAM\nSi desea proseguir se perderá la memoria dada anteriormente", "ADVERTENCIA", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"PROSEGUIR", "CANCELAR"}, null);
 
                     if (confirmacion == 0) {
-                        //Tamaño de memoria de la RAM
-                        do {
-                            salir = false;
-                            try {
-                                do {
-                                    tamaño = Integer.parseInt(JOptionPane.showInputDialog(null, "Tamaño de la RAM:", "RAM", JOptionPane.INFORMATION_MESSAGE));
-
-                                    if (tamaño <= 0) {
-                                        JOptionPane.showMessageDialog(null, "Usted ingreso un tamaño negativo\n Favor de volver a ingresar un valor", "Error", JOptionPane.ERROR_MESSAGE);
-                                    }
-                                } while (tamaño <= 0);
-
-                            } catch (HeadlessException | NumberFormatException e) {
-                                JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                salir = true;
-                            }
-                        } while (salir);
-
-                        RAM = new String[tamaño];
+                        RAM = memoriaRAM(RAM);
                         ram = true;
                         process = false;
 
@@ -58,30 +40,8 @@ public class ProcesosWindows {
                     }
 
                 } else {
-                    //Tamaño de memoria de la RAM
-                    do {
-                        salir = false;
-                        try {
-                            do {
-                                tamaño = Integer.parseInt(JOptionPane.showInputDialog(null, "Tamaño de la RAM:", "RAM", JOptionPane.INFORMATION_MESSAGE));
-
-                                if (tamaño <= 0) {
-                                    JOptionPane.showMessageDialog(null, "Usted ingreso un tamaño negativo\n Favor de volver a ingresar un valor", "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-                            } while (tamaño <= 0);
-
-                        } catch (HeadlessException | NumberFormatException e) {
-                            JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                            salir = true;
-                        }
-                    } while (salir);
-
-                    RAM = new String[tamaño];
+                    RAM = memoriaRAM(RAM);
                     ram = true;
-
-                    for (int i = 0; i < RAM.length; i++) {
-                        RAM[i] = "---------";
-                    }
                 }
 
             } else {
@@ -93,53 +53,15 @@ public class ProcesosWindows {
                             confirmacion = JOptionPane.showOptionDialog(null, "Usted ya ha ingresado TODOS los datos de sus Procesos\nSi desea proseguir se perderá el progreso hasta este momento", "ADVERTENCIA", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"PROSEGUIR", "CANCELAR"}, null);
 
                             if (confirmacion == 0) {
-                                //Porcentaje de utilización de la RAM
-                                do {
-                                    salir = false;
-                                    try {
-                                        do {
-                                            ocupado = Float.parseFloat(JOptionPane.showInputDialog(null, "Porcentaje de la RAM ocupada en porcentaje: (0-100)", "Ocupación RAM", JOptionPane.INFORMATION_MESSAGE));
-
-                                            if (ocupado < 0 || ocupado > 100) {
-                                                JOptionPane.showMessageDialog(null, "Usted ingreso un dato fuera del rango\n Favor de volver a ingresar un valor", "Error", JOptionPane.ERROR_MESSAGE);
-                                            }
-                                        } while (ocupado < 0 || ocupado > 100);
-
-                                    } catch (HeadlessException | NumberFormatException e) {
-                                        JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                        salir = true;
-                                    }
-                                } while (salir);
-
-                                //Método para llenar espacios de forma aleatoria de la RAM
-                                RAM = OcupadosRAM(RAM, ocupado, tamaño);
+                                RAM = storageRAM(RAM);
                                 process = false;
+
                             } else {
                                 JOptionPane.showMessageDialog(null, "Operación Cancelada con Éxito", "CANCELACIÓN", JOptionPane.INFORMATION_MESSAGE);
                             }
 
                         } else {
-
-                            //Porcentaje de utilización de la RAM
-                            do {
-                                salir = false;
-                                try {
-                                    do {
-                                        ocupado = Float.parseFloat(JOptionPane.showInputDialog(null, "Porcentaje de la RAM ocupada en porcentaje: (0-100)", "Ocupación RAM", JOptionPane.INFORMATION_MESSAGE));
-
-                                        if (ocupado < 0 || ocupado > 100) {
-                                            JOptionPane.showMessageDialog(null, "Usted ingreso un dato fuera del rango\n Favor de volver a ingresar un valor", "Error", JOptionPane.ERROR_MESSAGE);
-                                        }
-                                    } while (ocupado < 0 || ocupado > 100);
-
-                                } catch (HeadlessException | NumberFormatException e) {
-                                    JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                    salir = true;
-                                }
-                            } while (salir);
-
-                            //Método para llenar espacios de forma aleatoria de la RAM
-                            RAM = OcupadosRAM(RAM, ocupado, tamaño);
+                            RAM = storageRAM(RAM);
                         }
                     }
 
@@ -153,52 +75,7 @@ public class ProcesosWindows {
                                 confirmacion = JOptionPane.showOptionDialog(null, "Usted ya ha ingresado TODOS los datos de sus Procesos\nSi desea proseguir se perderá el progreso hasta este momento", "ADVERTENCIA", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"PROSEGUIR", "CANCELAR"}, null);
 
                                 if (confirmacion == 0) {
-                                    //Ingreso por parte del usuario el número de procesos que va a ingresar a la RAM
-                                    do {
-                                        salir = false;
-                                        try {
-
-                                            do {
-                                                procesos = Byte.parseByte(JOptionPane.showInputDialog(null, "¿Cuántos Procesos va a realizar?", "Numero de procesos", JOptionPane.QUESTION_MESSAGE));
-
-                                                if (procesos < 1) {
-                                                    JOptionPane.showMessageDialog(null, "Ingresó un número de procesos erróneo", "Procesos", JOptionPane.ERROR_MESSAGE);
-                                                }
-                                            } while (procesos < 1);
-
-                                        } catch (HeadlessException | NumberFormatException e) {
-                                            JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                            salir = true;
-                                        }
-                                    } while (salir);
-
-                                    proc = new byte[procesos];
-
-                                    //Número de Segemetos que va a contener cada uno de los Procesos
-                                    do {
-                                        salir = false;
-                                        try {
-                                            int i = 0;
-
-                                            do {
-                                                do {
-                                                    segmentos = Byte.parseByte(JOptionPane.showInputDialog(null, "Número de segmentos que tiene el proceso " + (i + 1), "Segementos proceso " + (i + 1), JOptionPane.QUESTION_MESSAGE));
-
-                                                    if (segmentos <= 0) {
-                                                        JOptionPane.showMessageDialog(null, "Ingresó un número de segmentos erróneo", "Error Segmentos", JOptionPane.ERROR_MESSAGE);
-                                                    }
-                                                } while (segmentos <= 0);
-
-                                                proc[i] = segmentos;
-
-                                                i++;
-                                            } while (i < procesos);
-
-                                        } catch (HeadlessException | NumberFormatException e) {
-                                            JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                            salir = true;
-                                        }
-                                    } while (salir);
+                                    proc = procesos(proc);
 
                                     h = 0;
 
@@ -220,52 +97,7 @@ public class ProcesosWindows {
                                 }
 
                             } else {
-                                //Ingreso por parte del usuario el número de procesos que va a ingresar a la RAM
-                                do {
-                                    salir = false;
-                                    try {
-
-                                        do {
-                                            procesos = Byte.parseByte(JOptionPane.showInputDialog(null, "¿Cuántos Procesos va a realizar?", "Numero de procesos", JOptionPane.QUESTION_MESSAGE));
-
-                                            if (procesos < 1) {
-                                                JOptionPane.showMessageDialog(null, "Ingresó un número de procesos erróneo", "Procesos", JOptionPane.ERROR_MESSAGE);
-                                            }
-                                        } while (procesos < 1);
-
-                                    } catch (HeadlessException | NumberFormatException e) {
-                                        JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                        salir = true;
-                                    }
-                                } while (salir);
-
-                                proc = new byte[procesos];
-
-                                //Número de Segemetos que va a contener cada uno de los Procesos
-                                do {
-                                    salir = false;
-                                    try {
-                                        int i = 0;
-
-                                        do {
-                                            do {
-                                                segmentos = Byte.parseByte(JOptionPane.showInputDialog(null, "Número de segmentos que tiene el proceso " + (i + 1), "Segementos proceso " + (i + 1), JOptionPane.QUESTION_MESSAGE));
-
-                                                if (segmentos <= 0) {
-                                                    JOptionPane.showMessageDialog(null, "Ingresó un número de segmentos erróneo", "Error Segmentos", JOptionPane.ERROR_MESSAGE);
-                                                }
-                                            } while (segmentos <= 0);
-
-                                            proc[i] = segmentos;
-
-                                            i++;
-                                        } while (i < procesos);
-
-                                    } catch (HeadlessException | NumberFormatException e) {
-                                        JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
-                                        salir = true;
-                                    }
-                                } while (salir);
+                                proc = procesos(proc);
 
                                 h = 0;
 
@@ -300,7 +132,7 @@ public class ProcesosWindows {
                                         switch (impresion) {
                                             case 0:
                                                 //Impresión de RAM
-                                                desplegadoRAM(RAM, tamaño);
+                                                desplegadoRAM(RAM, RAM.length);
                                                 break;
 
                                             case 1:
@@ -321,6 +153,121 @@ public class ProcesosWindows {
                 }
             }
         } while (opcion != 4);
+    }
+
+    //Método para número de procesos
+    public static byte[] procesos(byte[] proc) {
+        boolean salir;
+        byte procesos = 0;
+        byte segmentos;
+
+        //Ingreso por parte del usuario el número de procesos que va a ingresar a la RAM
+        do {
+            salir = false;
+            try {
+
+                do {
+                    procesos = Byte.parseByte(JOptionPane.showInputDialog(null, "¿Cuántos Procesos va a realizar?", "Numero de procesos", JOptionPane.QUESTION_MESSAGE));
+
+                    if (procesos < 1) {
+                        JOptionPane.showMessageDialog(null, "Ingresó un número de procesos erróneo", "Procesos", JOptionPane.ERROR_MESSAGE);
+                    }
+                } while (procesos < 1);
+
+            } catch (HeadlessException | NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
+                salir = true;
+            }
+        } while (salir);
+
+        proc = new byte[procesos];
+
+        //Número de Segmentos que va a contener cada uno de los Procesos
+        do {
+            salir = false;
+            try {
+                int i = 0;
+
+                do {
+                    do {
+                        segmentos = Byte.parseByte(JOptionPane.showInputDialog(null, "Número de segmentos que tiene el proceso " + (i + 1), "Segementos proceso " + (i + 1), JOptionPane.QUESTION_MESSAGE));
+
+                        if (segmentos <= 0) {
+                            JOptionPane.showMessageDialog(null, "Ingresó un número de segmentos erróneo", "Error Segmentos", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (segmentos <= 0);
+
+                    proc[i] = segmentos;
+
+                    i++;
+                } while (i < procesos);
+
+            } catch (HeadlessException | NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
+                salir = true;
+            }
+        } while (salir);
+
+        return proc;
+    }
+
+    //Método para ocupar la memoria RAM
+    public static String[] storageRAM(String[] RAM) {
+        boolean salir;
+        float ocupado = 0.0f;
+        //Porcentaje de utilización de la RAM
+        do {
+            salir = false;
+            try {
+                do {
+                    ocupado = Float.parseFloat(JOptionPane.showInputDialog(null, "Porcentaje de la RAM ocupada en porcentaje: (0-100)", "Ocupación RAM", JOptionPane.INFORMATION_MESSAGE));
+
+                    if (ocupado < 0 || ocupado > 100) {
+                        JOptionPane.showMessageDialog(null, "Usted ingreso un dato fuera del rango\n Favor de volver a ingresar un valor", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } while (ocupado < 0 || ocupado > 100);
+
+            } catch (HeadlessException | NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
+                salir = true;
+            }
+        } while (salir);
+
+        //Método para llenar espacios de forma aleatoria de la RAM
+        RAM = OcupadosRAM(RAM, ocupado, RAM.length);
+
+        return RAM;
+    }
+
+    //Método para crear la memoria RAM
+    public static String[] memoriaRAM(String[] RAM) {
+        boolean salir;
+        int tamaño = 0;
+        //Tamaño de memoria de la RAM
+        do {
+            salir = false;
+            try {
+                do {
+                    tamaño = Integer.parseInt(JOptionPane.showInputDialog(null, "Tamaño de la RAM:", "RAM", JOptionPane.INFORMATION_MESSAGE));
+
+                    if (tamaño <= 0) {
+                        JOptionPane.showMessageDialog(null, "Usted ingreso un tamaño negativo\n Favor de volver a ingresar un valor", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } while (tamaño <= 0);
+
+            } catch (HeadlessException | NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Ha ingresado algún valor que generó un conflicto \n" + e.getMessage() + "\n Favor de ingresar un valor correcto", "ERROR GENERAL", JOptionPane.ERROR_MESSAGE);
+                salir = true;
+            }
+        } while (salir);
+
+        RAM = new String[tamaño];
+
+        for (int i = 0; i < RAM.length; i++) {
+            RAM[i] = "---------";
+        }
+
+        return RAM;
     }
 
     //Método para dar de alta los datos de cada segmento
@@ -400,13 +347,17 @@ public class ProcesosWindows {
 
     //Método para llenar la RAM con los procesos seleccionados por los usuarios
     public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[], int TMS[][], int h, String[][] TMP) {
-        int s = 0, p, contador = 0, q, o, pagina;
+        int s = 0, p, contador = 0, q, o, pagina, fila = 1, indice = 0, direccion = 0;
         byte r;
+        boolean guardar;
+        
+        int [] variable;
 
         //try {
         for (int i = 0; i < proc.length; i++) {
             o = 0;
             p = 0;
+            indice = 0;
 
             do {
                 switch (tipo[s]) {
@@ -414,12 +365,27 @@ public class ProcesosWindows {
                         q = 0;
                         r = 0;
                         pagina = cuantos[s] * 2;
+                        fila = 1;
+                        guardar = true;
+
+                        for (int j = 0; j < s; j++) {
+                            indice += cuantos[j];
+                        }
 
                         do {
                             for (int j = contador; j < RAM.length; j++) {
                                 if (RAM[j].equalsIgnoreCase("---------")) {
                                     RAM[j] = "P" + (r + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
                                     contador = j;
+
+                                    if (guardar) {
+                                        guardar = false;
+                                        TMP = llenadoTMP_Pagina(TMP, j, fila, (o + 1), indice);
+                                        fila++;
+                                        indice++;
+                                    } else {
+                                        guardar = true;
+                                    }
                                     break;
                                 }
                             }
@@ -435,26 +401,45 @@ public class ProcesosWindows {
 
                     case "VARIABLE":
                         q = 0;
+                        fila = 1;
+
+                        for (int j = 0; j < s; j++) {
+                            indice += cuantos[j];
+                        }
+                        
+                        variable = new int[cuantos[s]];
 
                         do {
                             for (int j = contador; j < RAM.length; j++) {
                                 if (RAM[j].equalsIgnoreCase("---------")) {
                                     RAM[j] = "V" + (q + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
                                     contador = j;
+                                    variable[q] = j;
                                     break;
                                 }
                             }
                             q++;
                         } while (q < cuantos[s]);
+                        
+                        q = 0;
+                        
+                        do {
+                            
+                            
+                            q++;
+                        } while (q < cuantos[s]);
+                        
+                        
                         break;
                 }
                 o++;
                 s++;
                 p++;
+                indice = 0;
             } while (p < proc[i]);
 
             //Meter Las Tablas a la RAM
-            insercionTablas(proc[i], i, RAM, cuantos);
+            insercionTablas(proc[i], i, RAM, cuantos, TMP, proc);
             llenadoTMS(TMS, h, tipo, cuantos);
         }
 
@@ -484,7 +469,7 @@ public class ProcesosWindows {
     }
 
     //Método para  incersión de las tablas a la RAM
-    public static void insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos) {
+    public static void insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos, String[][] TMP, byte[] procesos) {
         int k = 0;
 
         do {
@@ -495,12 +480,69 @@ public class ProcesosWindows {
                 }
             }
             k++;
-        } while (k < proc);
+        } while (k < proc);        
+        
+        int fin = 0, inicio = 0, sum = 0;        
+        
+        for (int i = 0; i < p; i++) {            
+            inicio += procesos[i];
+            for (int j = 0; j < procesos[i]; j++) {
+                sum += cuantos[j];
+            }
+        }
+        
+        
+        for (int i = 0; i < sum; i++) {
+            fin += cuantos[i];
+        }
+        
+        for (int i = inicio; i < fin; i++) {
+            
+        }
     }
 
-    //Método para creación y llenado de las tablas TMP
-    public static void llenadoTMP(Byte[] cuantos, String[] RAM, String[] tipo, byte[] proc, int numero, String[][] TMP) {
+    //Método para creación y llenado de las tablas TMP de tipo Página
+    public static String[][] llenadoTMP_Pagina(String[][] TMP, Integer posicion, Integer fila, Integer segmento, int indice) {
+        Integer po;
 
+        TMP[indice][0] = "1";
+
+        if (posicion % 2 == 0) {
+            TMP[indice][2] = posicion.toString();
+        } else {
+            po = posicion - 1;
+            TMP[indice][2] = po.toString();
+        }
+
+        po = posicion % 2;
+
+        TMP[indice][3] = "(" + segmento.toString() + ", " + fila.toString() + ", " + po.toString() + ")";
+
+        return TMP;
+    }
+
+    //Método para creación y llenado de las tablas TMP de tipo Variable
+    public static String[][] llenadoTMP_Variable(String[][] TMP, Integer posicion, Integer entrada, Integer segmento, int indice, int caso, int variable) {
+        Integer po;
+
+        if (caso == 0) {
+            TMP[indice][0] = "1";
+
+            if (posicion % 2 == 0) {
+                TMP[indice][2] = posicion.toString();
+            } else {
+                po = posicion - 1;
+                TMP[indice][2] = po.toString();
+            }
+
+            po = posicion % 2;
+
+            TMP[indice][3] = "V" + variable + "(" + segmento.toString() + ", " + entrada.toString() + ", " + po.toString() + ")";
+
+        } else {
+
+        }
+        return TMP;
     }
 
     //Método para llenar la Tabla de Mapa de Segmentos
