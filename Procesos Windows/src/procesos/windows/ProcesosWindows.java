@@ -350,8 +350,8 @@ public class ProcesosWindows {
         int s = 0, p, contador = 0, q, o, pagina, fila = 1, indice = 0, direccion = 0;
         byte r;
         boolean guardar;
-        
-        int [] variable;
+
+        int[] variable;
 
         //try {
         for (int i = 0; i < proc.length; i++) {
@@ -401,13 +401,12 @@ public class ProcesosWindows {
 
                     case "VARIABLE":
                         q = 0;
-                        fila = 1;
 
                         for (int j = 0; j < s; j++) {
                             indice += cuantos[j];
                         }
-                        
-                        variable = new int[cuantos[s]];
+
+                        variable = new int[cuantos[s] + 1];
 
                         do {
                             for (int j = contador; j < RAM.length; j++) {
@@ -420,16 +419,27 @@ public class ProcesosWindows {
                             }
                             q++;
                         } while (q < cuantos[s]);
-                        
+
                         q = 0;
-                        
+                        fila = 1;
+
                         do {
-                            
-                            
+                            if ((variable[q] % 2 == 0 && variable[q + 1] != (variable[q] + 1)) || (variable[q] % 2 != 0)) {
+                                llenadoTMP_Variable(TMP, variable[q], fila, (o + 1), indice, 0, q);
+                                fila++;
+                                indice++;
+
+                            } else {
+                                llenadoTMP_Variable(TMP, variable[q], fila, (o + 1), indice, 1, q);
+                                fila++;
+                                indice++;
+
+                                q++;
+                            }
+
                             q++;
                         } while (q < cuantos[s]);
-                        
-                        
+
                         break;
                 }
                 o++;
@@ -439,14 +449,13 @@ public class ProcesosWindows {
             } while (p < proc[i]);
 
             //Meter Las Tablas a la RAM
-            insercionTablas(proc[i], i, RAM, cuantos, TMP, proc);
+            insercionTablas(proc[i], i, RAM, cuantos, TMP, proc, TMS);
             llenadoTMS(TMS, h, tipo, cuantos);
         }
 
         /*} catch (Exception e) {
             JOptionPane.showMessageDialog(null, "No se pudieron ingresar todos los valores dentro de la memora RAM\n Existe un OverFlow\n" + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
         }*/
-        //llenadoTMP(cuantos, RAM, tipo, proc, i, TMP);        
     }
 
     //Método para crear la matriz TMP
@@ -469,7 +478,7 @@ public class ProcesosWindows {
     }
 
     //Método para  incersión de las tablas a la RAM
-    public static void insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos, String[][] TMP, byte[] procesos) {
+    public static void insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos, String[][] TMP, byte[] procesos, int[][] TMS) {
         int k = 0;
 
         do {
@@ -480,24 +489,58 @@ public class ProcesosWindows {
                 }
             }
             k++;
-        } while (k < proc);        
-        
-        int fin = 0, inicio = 0, sum = 0;        
-        
-        for (int i = 0; i < p; i++) {            
-            inicio += procesos[i];
-            for (int j = 0; j < procesos[i]; j++) {
-                sum += cuantos[j];
-            }
+        } while (k < proc);
+
+        k = 0;
+
+        int inicio = 0, fin = 0, sum = 0, apoyo = 0, segmentos = 0;
+
+        for (int i = 0; i < (p + 1); i++) {
+            sum += procesos[i];
         }
-        
-        
+
         for (int i = 0; i < sum; i++) {
             fin += cuantos[i];
         }
-        
+
+        for (int i = 0; i < p; i++) {
+            apoyo += procesos[i];
+        }
+
+        sum = 0;
+
+        for (int i = 0; i < apoyo; i++) {
+            inicio += cuantos[i];
+        }
+
+        for (int i = 0; i < apoyo + 1; i++) {
+            sum += cuantos[i];
+        }
+
+        int t = apoyo;
+
         for (int i = inicio; i < fin; i++) {
-            
+            if (sum == i) {
+                segmentos++;
+                apoyo++;
+                sum += cuantos[apoyo];
+                k = 0;
+            }
+
+            if (TMP[i][0].equalsIgnoreCase("1")) {
+                for (int j = 0; j < RAM.length; j++) {
+                    if (RAM[j].equalsIgnoreCase("---------")) {
+                        RAM[j] = "E" + (k + 1) + "TMPS" + (segmentos + 1) + "P" + (p + 1);
+
+                        if (RAM[j].equalsIgnoreCase("E1TMPS" + (segmentos + 1) + "P" + (p + 1))) {
+                            TMS[t][3] = j;
+                            t++;
+                        }
+                        break;
+                    }
+                }
+                k++;
+            }
         }
     }
 
@@ -537,10 +580,21 @@ public class ProcesosWindows {
 
             po = posicion % 2;
 
-            TMP[indice][3] = "V" + variable + "(" + segmento.toString() + ", " + entrada.toString() + ", " + po.toString() + ")";
+            TMP[indice][3] = "V" + (variable + 1) + "(" + segmento.toString() + ", " + entrada.toString() + ", " + po.toString() + ")";
 
         } else {
+            TMP[indice][0] = "1";
 
+            if (posicion % 2 == 0) {
+                TMP[indice][2] = posicion.toString();
+            } else {
+                po = posicion - 1;
+                TMP[indice][2] = po.toString();
+            }
+
+            po = posicion % 2;
+
+            TMP[indice][3] = "V" + (variable + 1) + "(" + segmento.toString() + ", " + entrada.toString() + ", " + po.toString() + ")  V" + (variable + 2) + "(" + segmento.toString() + ", " + entrada.toString() + ", " + (po + 1) + ")";
         }
         return TMP;
     }
@@ -621,7 +675,9 @@ public class ProcesosWindows {
             }
 
             for (int j = 0; j < 4; j++) {
-                System.out.print("  " + TMP[i][j]);
+                if (TMP[i][0].equalsIgnoreCase("1")) {
+                    System.out.print("  " + TMP[i][j]);
+                }
             }
             System.out.println();
         }
