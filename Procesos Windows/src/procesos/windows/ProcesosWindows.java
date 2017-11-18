@@ -10,10 +10,9 @@ import javax.swing.JOptionPane;
 public class ProcesosWindows {
 
     public static void main(String[] args) {
-        int opcion, tamaño = 0, impresion = 0, h = 0, confirmacion = 0;
-        byte procesos = 0, segmentos;
-        float ocupado = -1;
-        boolean salir, ram = false, process = false;
+        int opcion, impresion = 0, h = 0, confirmacion = 0;
+        boolean ram = false, process = false;
+        float ocupado = 0;
 
         String RAM[] = null;
         int[][] TMS = null;
@@ -53,7 +52,7 @@ public class ProcesosWindows {
                             confirmacion = JOptionPane.showOptionDialog(null, "Usted ya ha ingresado TODOS los datos de sus Procesos\nSi desea proseguir se perderá el progreso hasta este momento", "ADVERTENCIA", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"PROSEGUIR", "CANCELAR"}, null);
 
                             if (confirmacion == 0) {
-                                RAM = storageRAM(RAM);
+                                ocupado = storageRAM(RAM);
                                 process = false;
 
                             } else {
@@ -61,7 +60,7 @@ public class ProcesosWindows {
                             }
 
                         } else {
-                            RAM = storageRAM(RAM);
+                            ocupado = storageRAM(RAM);
                         }
                     }
 
@@ -71,10 +70,50 @@ public class ProcesosWindows {
                             JOptionPane.showMessageDialog(null, "Usted no ha ingresado ninguna memoria RAM\nPor lo tanto no puede usar este apartado\nLo invitamos ha ingresar los datos de la memoria RAM", "ADVERTENCIA", JOptionPane.INFORMATION_MESSAGE);
 
                         } else {
-                            if (process) {
-                                confirmacion = JOptionPane.showOptionDialog(null, "Usted ya ha ingresado TODOS los datos de sus Procesos\nSi desea proseguir se perderá el progreso hasta este momento", "ADVERTENCIA", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"PROSEGUIR", "CANCELAR"}, null);
+                            if (ocupado >= 95 && ocupado <= 100) {
+                                JOptionPane.showMessageDialog(null, "Su porcentaje de ocupación de la RAM es del " + ocupado + "%\npor lo que la memoria se encuentra sobrecargada y no puede hacer uso de ella\nVuelva a ingresar un porcentaje de ocupación menor\npara usar este apartado\n¡¡OPERACIÓN CANCELADA POR PELIGRO!!", "PELIGRO", JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                if (ocupado >= 70 && ocupado < 80) {
+                                    JOptionPane.showMessageDialog(null, "Su porcentaje de ocupación de la RAM es del " + ocupado + "%\npor lo que la memoria corre peligro de desbordamiento\nsi se le colocan varios procesos", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
 
-                                if (confirmacion == 0) {
+                                } else {
+                                    if (ocupado >= 80 && ocupado < 90) {
+                                        JOptionPane.showMessageDialog(null, "Su porcentaje de ocupación de la RAM es del " + ocupado + "%\npor lo que la memoria corre peligro de desbordamiento\nsi se le colocan varios procesos", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+
+                                    } else {
+                                        if (ocupado >= 90 && ocupado < 95) {
+                                            JOptionPane.showMessageDialog(null, "Su porcentaje de ocupación de la RAM es del " + ocupado + "%\npor lo que la memoria corre peligro de desbordamiento\nsi se le colocan varios procesos\n¡¡ALTA PROBABILIDAD DE DESBORDAMIENTO!!", "PELIGRO", JOptionPane.WARNING_MESSAGE);
+                                        } else {
+                                        }
+                                    }
+                                }
+
+                                if (process) {
+                                    confirmacion = JOptionPane.showOptionDialog(null, "Usted ya ha ingresado TODOS los datos de sus Procesos\nSi desea proseguir se perderá el progreso hasta este momento", "ADVERTENCIA", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"PROSEGUIR", "CANCELAR"}, null);
+
+                                    if (confirmacion == 0) {
+                                        proc = procesos(proc);
+
+                                        h = 0;
+
+                                        for (int i = 0; i < proc.length; i++) {
+                                            h += proc[i];
+                                        }
+
+                                        TMS = new int[h][4];
+
+                                        tipo = new String[h];
+                                        cuantos = new Byte[h];
+
+                                        TMP = altaSegmentos(proc, h, tipo, cuantos, RAM, TMS, h);
+
+                                        process = true;
+
+                                    } else {
+                                        JOptionPane.showMessageDialog(null, "Operación Cancelada con Éxito", "CANCELACIÓN", JOptionPane.INFORMATION_MESSAGE);
+                                    }
+
+                                } else {
                                     proc = procesos(proc);
 
                                     h = 0;
@@ -91,28 +130,7 @@ public class ProcesosWindows {
                                     TMP = altaSegmentos(proc, h, tipo, cuantos, RAM, TMS, h);
 
                                     process = true;
-
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "Operación Cancelada con Éxito", "CANCELACIÓN", JOptionPane.INFORMATION_MESSAGE);
                                 }
-
-                            } else {
-                                proc = procesos(proc);
-
-                                h = 0;
-
-                                for (int i = 0; i < proc.length; i++) {
-                                    h += proc[i];
-                                }
-
-                                TMS = new int[h][4];
-
-                                tipo = new String[h];
-                                cuantos = new Byte[h];
-
-                                TMP = altaSegmentos(proc, h, tipo, cuantos, RAM, TMS, h);
-
-                                process = true;
                             }
                         }
 
@@ -216,7 +234,7 @@ public class ProcesosWindows {
     }
 
     //Método para ocupar la memoria RAM
-    public static String[] storageRAM(String[] RAM) {
+    public static float storageRAM(String[] RAM) {
         boolean salir;
         float ocupado = 0.0f;
         //Porcentaje de utilización de la RAM
@@ -240,7 +258,7 @@ public class ProcesosWindows {
         //Método para llenar espacios de forma aleatoria de la RAM
         RAM = OcupadosRAM(RAM, ocupado, RAM.length);
 
-        return RAM;
+        return ocupado;
     }
 
     //Método para crear la memoria RAM
@@ -351,7 +369,7 @@ public class ProcesosWindows {
 
     //Método para llenar la RAM con los procesos seleccionados por los usuarios
     public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[], int TMS[][], int h, String[][] TMP) {
-        int s = 0, p, contador = 0, q, o, pagina, fila = 1, indice = 0, direccion = 0;
+        int s = 0, p, contador = 0, q, o, pagina, fila = 1, indice = 0;
         byte r;
         boolean guardar;
 
@@ -623,7 +641,7 @@ public class ProcesosWindows {
 
     //Método para desplegar TMS
     public static void desplegadoTMS(int[][] TMS, int h, byte proc[], String TMP[][], Byte[] cuantos) {
-        int k = 0, sum, proceso = 0, cuenta = proc[0], f = 0;
+        int k = 0, sum, proceso = 0, f = 0;
 
         sum = proc[0];
 
