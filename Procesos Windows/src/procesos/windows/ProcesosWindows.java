@@ -148,6 +148,10 @@ public class ProcesosWindows {
                                     } while (impresion != 3);
                                 }
                             }
+                        } else {
+                            if (opcion == 4) {
+                                JOptionPane.showMessageDialog(null, "Gracias por usar este programa\nLo esperamos de vuelta pronto\n\nHecho por: Mario Josue del Toro Morales\nEstudiante de la carrera de:\nIngeniería en Sistemas Computacionales\ndel Instituto Tecnológico de Colima\n              Quinto Semestre\n Materia: Sistemas Operativos\n            Versión: 1.09.1997f", "AGRADECIMIENTO", JOptionPane.INFORMATION_MESSAGE);
+                            }
                         }
                     }
                 }
