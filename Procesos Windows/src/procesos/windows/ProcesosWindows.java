@@ -15,7 +15,7 @@ public class ProcesosWindows {
         float ocupado = 0;
 
         String RAM[] = null;
-        int[][] TMS = null;
+        float[][] TMS = null;
         String[] tipo;
         Byte cuantos[] = null;
         String[][] TMP = null;
@@ -100,7 +100,7 @@ public class ProcesosWindows {
                                             h += proc[i];
                                         }
 
-                                        TMS = new int[h][4];
+                                        TMS = new float[h][4];
 
                                         tipo = new String[h];
                                         cuantos = new Byte[h];
@@ -122,7 +122,7 @@ public class ProcesosWindows {
                                         h += proc[i];
                                     }
 
-                                    TMS = new int[h][4];
+                                    TMS = new float[h][4];
 
                                     tipo = new String[h];
                                     cuantos = new Byte[h];
@@ -293,7 +293,7 @@ public class ProcesosWindows {
     }
 
     //Método para dar de alta los datos de cada segmento
-    public static String[][] altaSegmentos(byte[] proc, int h, String[] tipo, Byte[] cuantos, String[] RAM, int[][] TMS, int ñ) {
+    public static String[][] altaSegmentos(byte[] proc, int h, String[] tipo, Byte[] cuantos, String[] RAM, float[][] TMS, int ñ) {
         int k, o = 0;
         boolean bueno;
         String cadenota = "";
@@ -368,8 +368,8 @@ public class ProcesosWindows {
     }
 
     //Método para llenar la RAM con los procesos seleccionados por los usuarios
-    public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[], int TMS[][], int h, String[][] TMP) {
-        int s = 0, p, contador = 0, q, o, pagina, fila = 1, indice = 0;
+    public static void llenadoRAM(String[] tipo, byte[] proc, Byte[] cuantos, String RAM[], float TMS[][], int h, String[][] TMP) {
+        int s = 0, p, contador = 0, q, o, pagina, fila = 1, indice = 0, j = 0;
         byte r;
         boolean guardar;
 
@@ -390,12 +390,12 @@ public class ProcesosWindows {
                         fila = 1;
                         guardar = true;
 
-                        for (int j = 0; j < s; j++) {
+                        for (j = 0; j < s; j++) {
                             indice += cuantos[j];
                         }
 
                         do {
-                            for (int j = contador; j < RAM.length; j++) {
+                            for (j = contador; j < RAM.length; j++) {
                                 if (RAM[j].equalsIgnoreCase("---------")) {
                                     RAM[j] = "P" + (r + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
                                     contador = j;
@@ -424,14 +424,14 @@ public class ProcesosWindows {
                     case "VARIABLE":
                         q = 0;
 
-                        for (int j = 0; j < s; j++) {
+                        for (j = 0; j < s; j++) {
                             indice += cuantos[j];
                         }
 
                         variable = new int[cuantos[s] + 1];
 
                         do {
-                            for (int j = contador; j < RAM.length; j++) {
+                            for (j = contador; j < RAM.length; j++) {
                                 if (RAM[j].equalsIgnoreCase("---------")) {
                                     RAM[j] = "V" + (q + 1) + " S" + (o + 1) + " P" + (i + 1) + " ";
                                     contador = j;
@@ -471,8 +471,13 @@ public class ProcesosWindows {
             } while (p < proc[i]);
 
             //Meter Las Tablas a la RAM
-            insercionTablas(proc[i], i, RAM, cuantos, TMP, proc, TMS);
+            int overflow = insercionTablas(proc[i], i, RAM, cuantos, TMP, proc, TMS);
             llenadoTMS(TMS, h, tipo, cuantos);
+            
+            if (overflow == RAM.length || j == RAM.length) {
+                JOptionPane.showMessageDialog(null, "Ha ocurrido un desbordamiento dentro de la memoria RAM\nPuede que no todos los valores de los procesos se encuentren en la RAM", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+                break;
+            }
         }
 
         /*} catch (Exception e) {
@@ -500,11 +505,11 @@ public class ProcesosWindows {
     }
 
     //Método para  incersión de las tablas a la RAM
-    public static void insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos, String[][] TMP, byte[] procesos, int[][] TMS) {
-        int k = 0;
+    public static int insercionTablas(byte proc, int p, String[] RAM, Byte[] cuantos, String[][] TMP, byte[] procesos, float[][] TMS) {
+        int k = 0, j;
 
         do {
-            for (int j = 0; j < RAM.length; j++) {
+            for (j = 0; j < RAM.length; j++) {
                 if (RAM[j].equalsIgnoreCase("---------")) {
                     RAM[j] = "E" + (k + 1) + " TMS P" + (p + 1);
                     break;
@@ -550,12 +555,12 @@ public class ProcesosWindows {
             }
 
             if (TMP[i][0].equalsIgnoreCase("1")) {
-                for (int j = 0; j < RAM.length; j++) {
+                for (j = 0; j < RAM.length; j++) {
                     if (RAM[j].equalsIgnoreCase("---------")) {
                         RAM[j] = "E" + (k + 1) + "TMPS" + (segmentos + 1) + "P" + (p + 1);
 
                         if (RAM[j].equalsIgnoreCase("E1TMPS" + (segmentos + 1) + "P" + (p + 1))) {
-                            TMS[t][3] = j;
+                            TMS[t][3] = (j - 1);
                             t++;
                         }
                         break;
@@ -564,6 +569,7 @@ public class ProcesosWindows {
                 k++;
             }
         }
+        return j;
     }
 
     //Método para creación y llenado de las tablas TMP de tipo Página
@@ -622,14 +628,14 @@ public class ProcesosWindows {
     }
 
     //Método para llenar la Tabla de Mapa de Segmentos
-    public static int[][] llenadoTMS(int[][] TMS, int h, String[] tipo, Byte[] cuantos) {
+    public static float[][] llenadoTMS(float[][] TMS, int h, String[] tipo, Byte[] cuantos) {
 
         for (int i = 0; i < h; i++) {
             TMS[i][0] = 1;
             TMS[i][1] = 0;
 
             if (tipo[i].equalsIgnoreCase("VARIABLE")) {
-                TMS[i][2] = cuantos[i] / 2;
+                TMS[i][2] = (float) (cuantos[i] / 2.0);
             } else {
                 TMS[i][2] = cuantos[i];
             }
@@ -640,7 +646,7 @@ public class ProcesosWindows {
     }
 
     //Método para desplegar TMS
-    public static void desplegadoTMS(int[][] TMS, int h, byte proc[], String TMP[][], Byte[] cuantos) {
+    public static void desplegadoTMS(float[][] TMS, int h, byte proc[], String TMP[][], Byte[] cuantos) {
         int k = 0, sum, proceso = 0, f = 0;
 
         sum = proc[0];
