@@ -560,7 +560,7 @@ public class ProcesosWindows {
                         RAM[j] = "E" + (k + 1) + "TMPS" + (segmentos + 1) + "P" + (p + 1);
 
                         if (RAM[j].equalsIgnoreCase("E1TMPS" + (segmentos + 1) + "P" + (p + 1))) {
-                            TMS[t][3] = (j - 1);
+                            TMS[t][3] = j;
                             t++;
                         }
                         break;
